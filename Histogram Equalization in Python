@@ -1,0 +1,74 @@
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+# --------------------------GRAY-SCALE IMAGE HISTOGRAM EQUALIZATION--------------------
+
+# input an image in grayscale mode
+img = cv2.imread("mona lisa.jpg",0)
+img = cv2.resize(img, (400, 500))
+
+# find frequency of pixels in range 0-255 calculating histogram
+# histr = cv2.calcHist([img],[0],None,[256],[0,256])
+# show the plotting graph of an image
+# plt.plot(histr)
+
+# alternative way of calculating hist
+plt.hist(img.ravel(),256,[0,256])
+
+# using inbuilt function in open cv for equalization 
+equ = cv2.equalizeHist(img)
+
+# calculating histogram of an equalized image
+plt.hist(equ.ravel(),256,[0,256])
+
+#stacking images side-by-side
+res1 = np.hstack((img,equ)) 
+
+# image file created to view output
+# cv2.imwrite('res1.jpg',res1)
+
+# ouput window appears 
+cv2.imshow("gray", res1)
+
+plt.show()
+cv2.waitKey(0)
+
+
+
+
+#---------------------------------- COLOR IMAGE HISTOGRAM EQUALIZATION-------------------------------------- 
+
+c_img = cv2.imread("mona lisa.jpg")
+c_img = cv2.resize(c_img, (500, 600))
+
+# split image into b,g,r channels
+b, g, r = cv2.split(c_img)
+
+# apply Histogram Equalization on each channel
+hist_b = cv2.equalizeHist(b)
+hist_g = cv2.equalizeHist(g)
+hist_r = cv2.equalizeHist(r)
+
+# merge 3 processed channels
+output_image = cv2.merge([hist_b, hist_g, hist_r])
+
+
+c_res = np.hstack((c_img,output_image)) 
+# cv2.imwrite('color histogram equalization.jpg', c_res)
+
+cv2.imshow("color", c_res)
+
+# display comparison of RGB histograms
+titles = ['blue', 'green', 'red', 'blue equalized', 'green equalized', 'red equalized']
+hists = [b.ravel(), g.ravel(), r.ravel(), hist_b.ravel(), hist_g.ravel(), hist_r.ravel()]
+
+for i, (title, hist) in enumerate(zip(titles, hists)):
+    plt.subplot(2, 3, i + 1)
+    plt.title(title)
+    plt.hist(hist, bins=256)
+    plt.xticks(range(0, 257, 32))
+    plt.xlim((0, 256))
+    plt.yticks([])
+       
+plt.show()
+cv2.waitKey(0)
